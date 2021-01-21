@@ -18,7 +18,7 @@ Some development ideas for this project:
 
 to run this program (You need to be in the folder and you have to have glew and freeglut installed):
 
-g++ src/main.cpp src/Particlesystem.cpp -o run -lGLEW -lglut -lGLD
+g++ src/main.cpp src/Particlesystem.cpp -o run -lGLEW -lglut -lGL
 ./run
  
 
