@@ -14,8 +14,7 @@ class Particlesystem {
     float delta, alpha, beta, gamma, omega, t;
 
     std::vector<glm::vec3> positions; 
-    std::vector<glm::vec3> velocity;
-    //std::vector<glm::vec3> state; //  this is the state that shows the overall force 
+
     const float MASS = 0.01;
     const int PARTICL = 9;
     //timer

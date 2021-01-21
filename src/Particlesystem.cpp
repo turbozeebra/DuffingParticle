@@ -6,8 +6,6 @@
 #include "Particlesystem.h"
 #include <iostream>
 
-//value of rhoo(sigma), rhoo is a vectorfunction
-
 // a as arbitrary 
 // this force is just that the particles wouldnt be stuck together
 inline glm::vec3 Particlesystem::Fa(glm::vec3 v1, glm::vec3 v2) { 
@@ -17,7 +15,7 @@ inline glm::vec3 Particlesystem::Fa(glm::vec3 v1, glm::vec3 v2) {
     glm::vec3 retVec = (40.f/r3) * r;
     return retVec;
 }
-
+// this is the Duffing equation
 inline glm::vec3 Particlesystem::Fv(float t, glm::vec3 vec){
     glm::vec3 retVec ;
     retVec.y = retVec.y -delta * vec.y - beta*vec.x*vec.x*vec.x - alpha*vec.x +  gamma*std::cos(t*omega);
@@ -43,14 +41,14 @@ void Particlesystem::init() {
     delta = 0.2;
     gamma = 9.0;
     omega = 0.5;
-
+	// setup particles
     for (int i = 0; i < 3; i++)
     {
         for(int j = 0; j < 3; j++) 
         {
             glm::vec3 pos(-0.7 + j*0.4, -0.7 + i*0.4, 1.0);
             positions.push_back(pos);
-            velocity.push_back(glm::vec3(0.f,0.f,0.f));
+           
         }
     }
 }
@@ -58,7 +56,7 @@ void Particlesystem::init() {
 std::vector<glm::vec3>  Particlesystem::calcFa() {
     
     std::vector<glm::vec3> FaVec(PARTICL);
-    // its n-body problem 
+    // its a n-body problem 
     for(int j = 0; j < PARTICL; j++) {
         for(int i = 0; i < PARTICL; i++) {
         // atleast it doesen't go through every particle  
@@ -69,7 +67,8 @@ std::vector<glm::vec3>  Particlesystem::calcFa() {
             }
         }
     }
-    std::cout << FaVec[0].x << ",  " << FaVec[0].y << ", " << FaVec[0].z << std::endl;
+   // for debugging
+   // std::cout << FaVec[0].x << ",  " << FaVec[0].y << ", " << FaVec[0].z << std::endl;
     return FaVec;
 }
 
@@ -93,7 +92,7 @@ void Particlesystem::move(float step) {
     
     RK4(step);
 
-    std::cout << t << std::endl;
+    //std::cout << t << std::endl;
 }
 
 

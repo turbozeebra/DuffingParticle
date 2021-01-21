@@ -1,16 +1,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-/* Use glew.h instead of gl.h to get all the GL prototypes declared */
+// Use glew.h instead of gl.h to get all the GL prototypes declared 
 #include <GL/glew.h>
-/* Using the GLUT library for the base windowing setup */
+// Using the GLUT library for the base windowing setup 
 #include <GL/freeglut.h>
 #include "./common/shader_utils.h"
 #include "./common/shader_utils.cpp"
 //math library 
 #include "../glm/glm.hpp"
 #include "../glm/gtc/type_ptr.hpp"
-// using chrono for the timer
 
 #include <iostream>
 #include <vector>
@@ -48,8 +47,8 @@ void mouse (int button, int state, int x, int y);
 
 
 void init_Particles(){
-  // lets start with 50 particles o'right?
-  for(int i = 0; i < pSys.positions.size(); i++ ){
+ 
+  for(int i = 0; i < pSys.PARTICL; i++ ){
     
     move_particles[i*3]     = pSys.positions[i].x;
     move_particles[i*3 + 1] = pSys.positions[i].y;
@@ -72,20 +71,15 @@ int init_resources()
   
   glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_COMPATIBILITY_PROFILE);
 
-  /*
-    std::cout << glGetString(GL_VERSION) << std::endl;
-    std::cout << glGetString(GL_VENDOR) << std::endl;
-  */
-
   GLint link_ok = GL_FALSE;
 
- // vertex shader and fragment shader generation
+  // vertex shader and fragment shader generation
   if ((vs = create_shader("src/shaders/triangle.v.glsl", GL_VERTEX_SHADER))   == 0) return 0;
   if ((fs = create_shader("src/shaders/triangle.f.glsl", GL_FRAGMENT_SHADER)) == 0) return 0;
   
-  //create a program 
+  // create a program 
   program = glCreateProgram();
-  //attach shaders to it
+  // attach shaders to it
   glAttachShader(program, vs);
   glAttachShader(program, fs);
   glLinkProgram(program);
@@ -110,18 +104,16 @@ int init_resources()
 
 
 void setUniforms(){
-    //glUseProgram(program);
-    
-    //int loc  = glGetUniformLocation(vs,"u_Timer");
+   
     int loc2 = glGetUniformLocation(program,"u_Timer");
     int loc3 = glGetUniformLocation(program,"u_Color");
     int loc4 = glGetUniformLocation(program,"u_View");
     int loc5 = glGetUniformLocation(program,"u_Projection");
     GLfloat t = pSys.timeNow();
-    //camera/view transformation
+    // camera/view transformation
     glm::mat4 view = camera.GetViewMatrix();
     
-    // pass projection matrix to shader (note that in this case it could change every frame)
+    // pass projection matrix to shader 
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);    
    
     glUniform1f(loc2, t);
@@ -153,7 +145,7 @@ void onDisplay()
 
   glUseProgram(program);
   glEnableVertexAttribArray(attribute_coord3d);
-  /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
+  // Describe our vertices array to OpenGL
   glBindBuffer(GL_ARRAY_BUFFER, vbo_particles);
   glVertexAttribPointer(
     attribute_coord3d, // attribute
@@ -163,11 +155,9 @@ void onDisplay()
     0,                 // no extra data between each position
     0                  // offset of first element
   );
-  /* Push each element in buffer_vertices to the vertex shader */
+  
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(move_particles), &move_particles);
-  glDrawArrays(GL_POINTS, 0, PARTICLESIZE); // glDrawArrays(GL_TRIANGLES, 0, 3);
-  //here it changes the buffer or uploads the new values to the old buffer
-
+  glDrawArrays(GL_POINTS, 0, PARTICLESIZE); 
   glDisableVertexAttribArray(attribute_coord3d);
   glutSwapBuffers();
 
@@ -240,7 +230,7 @@ int main(int argc, char* argv[])
     glutInit(&argc, argv);
     glutInitContextVersion(2,0);
     glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE); // |GLUT_DEPTH|GLUT_ALPHA
-    glutInitWindowSize(WIDTH , HEIGHT); //
+    glutInitWindowSize(WIDTH , HEIGHT); 
     glutCreateWindow("Test program");
 
     GLenum glew_status = glewInit();
@@ -271,24 +261,4 @@ int main(int argc, char* argv[])
     free_resources();
     return 0;
 }
-/*
 
-
-void init_Particles(){
-  //five rows of 10 particles
-  float incX = (3.0/30.0);pSys.init();
-  float incY = (3.0/25.0);
-  float startX = -0.5; 
-  float startY = 0.0;
-  for(int i = 0; i < 5; i++){
-    for(int j = 0; j < 10; j++) {
-      particles[j*2 + i*20] = startX + j*incX;
-      particles[j*2 + 1 + i*20] = startY + i*incY;
-
-    }
-  }
-
-}
-
-
-*/
