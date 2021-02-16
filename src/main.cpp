@@ -18,7 +18,7 @@
 // camera class
 #include "Camera.h"
 
-const int PARTICLESIZE =9;
+const int PARTICLESIZE = 5; // 25 particles
 const int WIDTH = 600; 
 const int HEIGHT = 500;
 
@@ -26,9 +26,9 @@ GLuint vbo_particles;
 GLuint program;
 GLint attribute_coord3d;
 GLuint vs, fs; //vertex shader and fragment shader
-GLfloat move_particles[PARTICLESIZE*3]; //*3 because we are in 3d
+GLfloat move_particles[PARTICLESIZE*PARTICLESIZE*3]; //*3 because we are in 3d
 
-Particlesystem pSys;
+Particlesystem pSys(PARTICLESIZE);
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 4.0f));
 float lastX = 0.5f*WIDTH;
@@ -47,12 +47,13 @@ void mouse (int button, int state, int x, int y);
 
 
 void init_Particles(){
- 
-  for(int i = 0; i < pSys.PARTICL; i++ ){
-    
+  
+  for(int i = 0; i < pSys.getSystemSizeTimestwo(); i++ ){
+   // std::cout << i << std::endl;
     move_particles[i*3]     = pSys.positions[i].x;
     move_particles[i*3 + 1] = pSys.positions[i].y;
     move_particles[i*3 + 2] = pSys.positions[i].z;
+   // std::cout << pSys.positions[i].x<< " " << pSys.positions[i].y << " "<< pSys.positions[i].z << std::endl; 
   
   }
 
@@ -60,7 +61,7 @@ void init_Particles(){
 //this happens only once 
 int init_resources()
 {
-  
+ 
   pSys.init();
   
   init_Particles();
@@ -112,7 +113,6 @@ void setUniforms(){
     GLfloat t = pSys.timeNow();
     // camera/view transformation
     glm::mat4 view = camera.GetViewMatrix();
-    
     // pass projection matrix to shader 
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);    
    
@@ -124,15 +124,9 @@ void setUniforms(){
     
 }
 void move() {
-  pSys.move(0.001);
+  pSys.move(0.00081);
   
-  for(int i = 0; i < pSys.positions.size(); i++ ){
-    
-    move_particles[i*3]     = pSys.positions[i].x;
-    move_particles[i*3 + 1] = pSys.positions[i].y;
-    move_particles[i*3 + 2] = pSys.positions[i].z;
-    
-  }
+  init_Particles();
 }
 
 void onDisplay()
@@ -157,7 +151,7 @@ void onDisplay()
   );
   
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(move_particles), &move_particles);
-  glDrawArrays(GL_POINTS, 0, PARTICLESIZE); 
+  glDrawArrays(GL_POINTS, 0, pSys.getSystemSizeTimestwo()); 
   glDisableVertexAttribArray(attribute_coord3d);
   glutSwapBuffers();
 

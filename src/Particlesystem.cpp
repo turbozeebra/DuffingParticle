@@ -8,19 +8,22 @@
 
 // a as arbitrary 
 // this force is just that the particles wouldnt be stuck together
+Particlesystem::Particlesystem(int size) {
+    systemSize = size;
+}
 inline glm::vec3 Particlesystem::Fa(glm::vec3 v1, glm::vec3 v2) { 
     glm::vec3 r = (v2 - v1);
     float r3 = r.length();
     r = glm::normalize(r);
-    glm::vec3 retVec = (40.f/r3) * r;
+    glm::vec3 retVec = (100.f/r3) * r;
     return retVec;
 }
 // this is the Duffing equation
 inline glm::vec3 Particlesystem::Fv(float t, glm::vec3 vec){
-    glm::vec3 retVec ;
+    glm::vec3 retVec  = vec;
     retVec.y = retVec.y -delta * vec.y - beta*vec.x*vec.x*vec.x - alpha*vec.x +  gamma*std::cos(t*omega);
     retVec.x = t*vec.y;
-    retVec.z = 0;//std::cos(t);
+    retVec.z = 0.;
     return retVec;
 }
 
@@ -42,12 +45,19 @@ void Particlesystem::init() {
     gamma = 9.0;
     omega = 0.5;
 	// setup particles
-    for (int i = 0; i < 3; i++)
+    //starting position of positions[0]
+    float startX = -0.85;
+    float startY = -0.85;
+    int boxSize = systemSize;
+    float inc = (2.f * 0.85) / (boxSize - 1);
+    std::cout << "inc: " << inc << std::endl;
+    for (int i = 0; i < boxSize; i++)
     {
-        for(int j = 0; j < 3; j++) 
+        for(int j = 0; j < boxSize; j++) 
         {
-            glm::vec3 pos(-0.7 + j*0.4, -0.7 + i*0.4, 1.0);
+            glm::vec3 pos(startX + j*inc, startY + i*inc, inc*i);
             positions.push_back(pos);
+            //std::cout << pos.x << " " << pos.y << " " << pos.z << std::endl;
            
         }
     }
@@ -55,10 +65,10 @@ void Particlesystem::init() {
 
 std::vector<glm::vec3>  Particlesystem::calcFa() {
     
-    std::vector<glm::vec3> FaVec(PARTICL);
+    std::vector<glm::vec3> FaVec(systemSize*systemSize);
     // its a n-body problem 
-    for(int j = 0; j < PARTICL; j++) {
-        for(int i = 0; i < PARTICL; i++) {
+    for(int j = 0; j < systemSize; j++) {
+        for(int i = 0; i < systemSize; i++) {
         // atleast it doesen't go through every particle  
             if(i > j) {
                 glm::vec3 ff = Fa(positions[j], positions[i]);
@@ -94,5 +104,10 @@ void Particlesystem::move(float step) {
 
     //std::cout << t << std::endl;
 }
+int Particlesystem::getSystemSize() {
+    return systemSize;
+}
 
-
+int Particlesystem::getSystemSizeTimestwo() {
+    return systemSize*systemSize;
+}
